@@ -18,6 +18,11 @@ export default function RootLayout({
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="en">
+        <link
+          rel="preload"
+          href="/bg/bg.jpg"
+          as="image"
+        />
         <body className={inter.className}>
           <ConvexClientProvider>
             {children}

@@ -10,7 +10,7 @@ const AuthScreen = () => {
     const [state, setState] = useState<SignInTypes>('signIn')
     return (
         // todo: image optimisation or remove it
-        <div className="grid h-screen grid-cols-1 lg:grid-cols-2 bg-auth-bg bg-cover bg-center">
+        <div className="grid h-screen grid-cols-1 lg:grid-cols-2 bg-auth-bg bg-cover bg-center backdrop-blur-sm">
             <Head>
                 <title>
                     {
@@ -19,7 +19,7 @@ const AuthScreen = () => {
                 </title>
             </Head>
             {/* Todo: Add Logo */}
-            <div className="order-1 w-[80vw] mx-auto md:w-full lg:order-2 bg-none md:bg-black/20">
+            <div className="order-1 w-[80vw] mx-auto md:w-full lg:order-2 bg-none md:bg-black/30">
                 {
                     state === 'signIn' ? <SignInPage setState={setState}/> : <SignUpPage setState={setState}/>
                 }

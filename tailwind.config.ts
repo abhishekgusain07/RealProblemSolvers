@@ -22,6 +22,9 @@ const config = {
         'auth-bg': "url('/bg/bg.jpg')",
         'custom-gradient': "linear-gradient(90deg, rgba(110,231,183,1) 1%, rgba(16,185,129,1) 130%)",
       },
+      skew:{
+        '12': '12deg'
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
