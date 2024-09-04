@@ -9,7 +9,8 @@ import Head from "next/head";
 const AuthScreen = () => {
     const [state, setState] = useState<SignInTypes>('signIn')
     return (
-        <div className="grid h-screen grid-cols-1 lg:grid-cols-2 bg-[url('/bg/bg.jpg')] bg-cover bg-center">
+        // todo: image optimisation or remove it
+        <div className="grid h-screen grid-cols-1 lg:grid-cols-2 bg-auth-bg bg-cover bg-center">
             <Head>
                 <title>
                     {

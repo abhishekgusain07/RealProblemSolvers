@@ -19,7 +19,7 @@ const config = {
     },
     extend: {
       backgroundImage: {
-        'auth-bg': "url('/auth-bg.png')",
+        'auth-bg': "url('/bg/bg.jpg')",
         'custom-gradient': "linear-gradient(90deg, rgba(110,231,183,1) 1%, rgba(16,185,129,1) 130%)",
       },
       colors: {
