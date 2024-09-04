@@ -1,0 +1,1 @@
+export type SignInTypes = 'signIn' | 'signUp'
