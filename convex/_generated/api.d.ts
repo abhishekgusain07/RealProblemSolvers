@@ -15,6 +15,8 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
+import type * as upload from "../upload.js";
+import type * as user from "../user.js";
 import type * as userInfo from "../userInfo.js";
 
 /**
@@ -28,6 +30,8 @@ import type * as userInfo from "../userInfo.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
+  upload: typeof upload;
+  user: typeof user;
   userInfo: typeof userInfo;
 }>;
 export declare const api: FilterApi<

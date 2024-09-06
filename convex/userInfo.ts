@@ -6,6 +6,7 @@ import { auth } from "./auth";
 export const create = mutation({
     args: {
         userId: v.id("users"),
+        userName: v.string(),
         github: v.string(),
         linkedin: v.optional(v.string()),
         lastProject: v.optional(v.string()),
@@ -33,6 +34,7 @@ export const create = mutation({
 
         const userInfoId = await ctx.db.insert("userInfo", {
             userId: args.userId,
+            userName: args.userName,
             github: args.github,
             linkedin: args.linkedin,
             lastProject: args.lastProject,
@@ -50,17 +52,44 @@ export const create = mutation({
 
 export const get = query({
     args: {
-        userId: v.id("users"),
+
     },
     handler: async (ctx, args) => {
         const userId = await auth.getUserId(ctx)
         if(!userId) {
-            throw null
+            return null
         }
-        const userInfo = await ctx.db.get(args.userId)
+
+        const userInfo = await ctx.db
+            .query("userInfo")
+            .filter(q => q.eq(q.field("userId"), userId))
+            .unique();
+        
         if(!userInfo) {
-            throw null
+            return null
         }
+
         return userInfo
+    }
+})
+
+export const checkUserName = query({
+    args: {
+        userName: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            return false
+        }
+        const userInfo = await ctx.db
+            .query("userInfo")
+            .withIndex("by_userName", (q) => q.eq(("userName"), args.userName))
+            .unique();
+
+        if(!userInfo) {
+            return false
+        }
+        return true
     }
 })

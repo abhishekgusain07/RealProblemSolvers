@@ -7,6 +7,7 @@ const schema = defineSchema({
     
     userInfo: defineTable({
       userId: v.id("users"),
+      userName: v.string(),
       github: v.string(),
       linkedin: v.optional(v.string()),
       lastProject: v.optional(v.string()),
@@ -31,7 +32,8 @@ const schema = defineSchema({
       .searchIndex("search_linkedin", {
         searchField: "linkedin",
         filterFields: ["profession", "averageRating"]
-      }),
+      })
+      .index("by_userName", ["userName"]),
   });
 
 
