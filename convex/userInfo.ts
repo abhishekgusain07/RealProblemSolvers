@@ -5,7 +5,6 @@ import { auth } from "./auth";
 
 export const create = mutation({
     args: {
-        userId: v.id("users"),
         userName: v.string(),
         github: v.string(),
         linkedin: v.optional(v.string()),
@@ -26,14 +25,17 @@ export const create = mutation({
             throw new Error('Unauthorized')
         }
 
-        const userInfo = await ctx.db.get(args.userId)
+        const userInfo = await ctx.db
+        .query("userInfo")
+        .filter(q => q.eq(q.field("userId"), userId))
+        .unique();
 
         if(userInfo) {
             throw new Error('User info already exists')
         }
 
         const userInfoId = await ctx.db.insert("userInfo", {
-            userId: args.userId,
+            userId: userId,
             userName: args.userName,
             github: args.github,
             linkedin: args.linkedin,
@@ -47,6 +49,7 @@ export const create = mutation({
             projectsCompleted: args.projectsCompleted || 0,
             photoId: args.photoId,
         })
+        return userInfoId
     }
 })
 
@@ -69,6 +72,30 @@ export const get = query({
             return null
         }
 
+        return userInfo._id
+    }
+})
+
+export const getById = query({
+    args: {
+        userInfoId: v.id("userInfo"),
+    },
+    handler: async (ctx, args) => {
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            return null
+        }
+        const userInfo = await ctx.db
+            .query("userInfo")
+            .filter(q => q.eq(q.field("userId"), userId))
+            .unique();
+
+        if(!userInfo) {
+            return null
+        }
+        if(userInfo._id !== args.userInfoId) {
+            return null
+        }
         return userInfo
     }
 })

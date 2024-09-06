@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { userProffesion } from "@/lib/types";
 import Image from "next/image";
 import { useCheckUserNameAvailability } from "../api/use-checkUserNameAvailaibility";
+import { useCreateUserInfo } from "../api/use-createuserinfo";
+import { useGenerateUploadUrl } from "@/features/upload/api/use-uploadFileUrl";
 
 
 export const CreateUserInfoModal = () => {
@@ -25,35 +27,77 @@ export const CreateUserInfoModal = () => {
     const [linkedin, setLinkedin] = useState<string>("");
     const [lastProject, setLastProject] = useState<string>("");
     const [currentWork, setCurrentWork] = useState<string>("");
-    const [profession, setProfession] = useState<string>("");
+    const [profession, setProfession] = useState<userProffesion>("student");
     const [institution, setInstitution] = useState<string>("");
-    const [skills, setSkills] = useState<string[]>([]);
+    const [skills, setSkills] = useState<string>('');
     const [profilePicture, setProfilePicture] = useState<string>("");
+    const [image, setImage] = useState<File | null>(null);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const {mutate: CreateUserInfo, isPending: CreateUserInfoPending} = useCreateUserInfo();
     const {isAvailable, isLoading, setUserName: setDebouncedUserName} = useCheckUserNameAvailability();
+    const {mutate: generateUploadUrl } = useGenerateUploadUrl();
 
-    //todo:
-    // const {mutate, isPending } = useCreateWorkSpace();
 
     const handleClose = () => {
         setOpen(false);
         setUserName("");
+        setGithub("");
+        setLinkedin("");
+        setLastProject("");
+        setCurrentWork("");
+        setProfession("student");
+        setInstitution("");
+        setSkills("");
     }
 
-    //todo: process the skills array to a individual skills string
-    // const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    //     mutate({
-    //         name
-    //     }, {
-    //         onSuccess: (id) => {
-    //             toast.success("Workspace created");
-    //             router.push(`/workspace/${id}`);
-    //             handleClose();
-    //         }
-    //     });
-    // }
+    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+
+        try {
+            e.preventDefault();
+            const skillsArray = skills.split(',').map(skill => skill.trim());
+            let photoId = undefined;
+            if(image){
+                const url = await generateUploadUrl({}, {throwError: true})
+                    if(!url) throw new Error("Failed to generate upload url")
+                    const result = await fetch(url, {
+                        method: "POST",
+                        body: image,
+                        headers: {
+                            "Content-Type": image.type
+                        }
+                    })
+                    if(!result.ok) 
+                        throw new Error("Failed to upload image")
+                const {storageId} = await result.json()   
+                photoId = storageId;
+            }
+            console.log(photoId)
+            CreateUserInfo({
+                userName,
+                github,
+                linkedin,
+                lastProject,
+                currentWork,
+                profession,
+                institution,
+                skills: skillsArray,
+                photoId,
+            }, {
+                onSuccess: (id) => {
+                    toast.success("User info created");
+                    router.push(`/user/${id}`);
+                    handleClose();
+                },
+                onError: (error) => {
+                    toast.error("Failed to Register user info, Please Try again")
+                }
+            });
+            } catch (error) {
+                toast.error("Failed to Register user info, Please Try again")
+            }
+    }
     const handleUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newUserName = e.target.value;
         setUserName(newUserName);
@@ -66,6 +110,7 @@ export const CreateUserInfoModal = () => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setImage(file);
             const imageUrl = URL.createObjectURL(file);
             setProfilePicture(imageUrl);
         }
@@ -76,7 +121,7 @@ export const CreateUserInfoModal = () => {
                 <DialogHeader>
                     <DialogTitle>Fill in your information</DialogTitle>
                 </DialogHeader>
-                <form className="space-y-4" onSubmit={() => {}}>
+                <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="flex flex-col justify-center items-center">
                         <div className="rounded-full overflow-hidden cursor-pointer" onClick={handleImageClick}
                         onKeyDown={(e) => {
@@ -177,9 +222,9 @@ export const CreateUserInfoModal = () => {
                         disabled={false}
                     />
                     <Input 
-                        placeholder="Skills"
+                        placeholder="Skills (comma separated) eg, React, Next.js, Tailwind CSS"
                         value={skills}
-                        onChange={(e) => setSkills([...skills, e.target.value])}
+                        onChange={(e) => setSkills(e.target.value)}
                         required
                         autoFocus
                         minLength={3}

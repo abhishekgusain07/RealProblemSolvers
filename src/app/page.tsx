@@ -21,7 +21,7 @@ export default function Home() {
     if(isLoading)return;
 
     if(userInfo){
-      router.push('/home')
+      router.push(`/user/${userInfo}`)
     }else if(!open){
       setOpen(true)
     }

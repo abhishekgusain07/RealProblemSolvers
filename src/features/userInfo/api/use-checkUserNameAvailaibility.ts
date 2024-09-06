@@ -16,7 +16,8 @@ export const useCheckUserNameAvailability = (initialUserName = '') => {
     })
 
     const isLoading = result === undefined
-    const isAvailable = result !== null && result === false
+    const isEmpty = debouncedUserName === ''
+    const isAvailable = !isEmpty &&  debouncedUserName.length > 3 && result !== null && result === false
 
     return { 
         isAvailable, 
