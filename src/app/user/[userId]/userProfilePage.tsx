@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -32,26 +32,36 @@ export default function VibrantUserProfile({ initialUserInfo }: { initialUserInf
   const [userInfo, setUserInfo] = useState<UserInfo>(initialUserInfo)
   const [isEditing, setIsEditing] = useState(false)
   const [newSkill, setNewSkill] = useState('')
+  const [isChanged, setIsChanged] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [image, setImage] = useState<File | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(userInfo.photoId ? userInfo.photoId : null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+    if(userInfo === initialUserInfo){
+      setIsChanged(false)
+    }else{
+      setIsChanged(true)
+    }
   }
 
   const handleProfessionChange = (value: "student" | "workingProfessional") => {
     setUserInfo({ ...userInfo, profession: value })
   }
 
-  const handleAddSkill = () => {
-    if (newSkill && !userInfo.skills.includes(newSkill)) {
-      setUserInfo({ ...userInfo, skills: [...userInfo.skills, newSkill] })
-      setNewSkill('')
-    }
-  }
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
 
-  const handleRemoveSkill = (skill: string) => {
-    setUserInfo({ ...userInfo, skills: userInfo.skills.filter(s => s !== skill) })
-  }
-
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+          setImage(file);
+          const imageUrl = URL.createObjectURL(file);
+          setProfilePicture(imageUrl);
+      }
+  };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically send the updated userInfo to your backend
@@ -67,31 +77,53 @@ export default function VibrantUserProfile({ initialUserInfo }: { initialUserInf
         <div className='h-full w-full m-5 rounded-lg py-10'>
         <div className='flex flex-col md:flex-row'>
             <div className='w-[30vw] mb-auto p-8 text-center bg-white'>
-                <div className='pt-4 px-3 flex flex-col justify-center relative mb-auto'>
-                    <Avatar className="w-32 h-32 mx-auto mb-4 border-4 border-black shadow-lg">
-                        <AvatarImage src={userInfo.photoId ? '/user.jpg' : undefined} alt={userInfo.userName} />
-                        <AvatarFallback className="text-3xl font-bold">{userInfo.userName.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <div className='pt-4 px-3 flex flex-col justify-center relative mb-auto'
+                onClick={handleImageClick}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                      handleImageClick();
+                  }
+                  }}
+                >
+                    <Input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        className="hidden"
+                    />
+                    <Avatar className="w-32 h-32 mx-auto mb-4 border-4 border-black shadow-lg"
+                    >
+                          
+                        <AvatarImage src={profilePicture || '/user.jpg'} alt={userInfo.userName} className='object-cover' />
+                        <AvatarFallback className="text-3xl font-bold">
+                          <img src={'/user.jpg'} alt={userInfo.userName} className='object-contain' />
+                        </AvatarFallback>
                     </Avatar>
                     <div className='mt-3 flex flex-col gap-y-3'>
                       <div
-                        className='flex flex-row justify-between items-center gap-x-3 bg-white rounded-lg shadow-xl cursor-pointer px-3 py-9'
+                        className='flex flex-col md:flex-row justify-between items-center gap-x-3 bg-white rounded-lg shadow-xl cursor-pointer px-3 py-9'
                       >
                         <p className='text-xl font-bold '>Average Rating</p>
                         <p className='text-xl font-bold text-muted-foreground'>{userInfo.averageRating}</p>
                       </div>
                       <div
-                        className='flex flex-row justify-between items-center gap-x-3 bg-white rounded-lg shadow-xl cursor-pointer px-3 py-9'
+                        className='flex flex-col md:flex-row justify-between items-center gap-x-3 bg-white rounded-lg shadow-xl cursor-pointer px-3 py-9'
                       >
                         <p className='text-xl font-bold '>Total Ratings</p>
                         <p className='text-xl font-bold text-muted-foreground'>{userInfo.totalRatings}</p>
                       </div>
                       <div
-                        className='flex flex-row justify-between items-center gap-x-3 bg-white rounded-lg shadow-xl cursor-pointer px-3 py-9'
+                        className='flex flex-col md:flex-row justify-between items-center gap-x-3 bg-white rounded-lg shadow-xl cursor-pointer px-3 py-9'
                       >
                         <p className='text-xl font-bold '>Projects Completed</p>
                         <p className='text-xl font-bold text-muted-foreground'>{userInfo.projectsCompleted}</p>
                       </div>
                     </div>
+                    <Button className='w-full mt-5'
+                    onClick={() => setIsEditing(!isEditing)}
+                    disabled={isChanged}
+                    >Save Profile</Button>
                 </div>
             </div>
             <div className="bg-white bg-opacity-30 p-8 text-center w-[69vw]">

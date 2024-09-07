@@ -3,6 +3,7 @@ import { mutation, query } from "./_generated/server";
 import { auth } from "./auth";
 
 
+
 export const create = mutation({
     args: {
         userName: v.string(),
@@ -53,6 +54,7 @@ export const create = mutation({
     }
 })
 
+
 export const get = query({
     args: {
 
@@ -75,6 +77,7 @@ export const get = query({
         return userInfo._id
     }
 })
+
 
 export const getById = query({
     args: {
@@ -99,6 +102,7 @@ export const getById = query({
         return userInfo
     }
 })
+
 
 export const checkUserName = query({
     args: {
