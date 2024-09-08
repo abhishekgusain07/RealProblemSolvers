@@ -28,7 +28,7 @@ type UserInfo = {
   photoId?: string
 }
 
-export default function VibrantUserProfile({ initialUserInfo }: { initialUserInfo: UserInfo }) {
+export default function userProfilePage({ initialUserInfo }: { initialUserInfo: UserInfo }) {
   const [userInfo, setUserInfo] = useState<UserInfo>(initialUserInfo)
   const [isEditing, setIsEditing] = useState(false)
   const [newSkill, setNewSkill] = useState('')
