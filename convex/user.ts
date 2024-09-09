@@ -1,6 +1,8 @@
 import { query } from "./_generated/server";
 import { auth } from "./auth";
 
+//todo: add user to db
+
 export const get = query({
     args: {},
     handler: async (ctx, args) => {
