@@ -31,6 +31,9 @@ export default function Home() {
       <div className="h-screen w-full bg-white text-center items-center justify-center flex">
         <UserButton />
         <div>
+          <div className="flex flex-col h-screen justify-center items-center">
+            <div className="text-2xl font-bold">Welcome to the app</div>
+          </div>
         </div>
       </div>
     </>
