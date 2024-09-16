@@ -3,6 +3,47 @@ import { mutation, query } from "./_generated/server";
 import { auth } from "./auth";
 
 
+export const update = mutation({
+    args: {
+        userName: v.string(),
+        github: v.string(),
+        linkedin: v.string(),
+        lastProject: v.string(),
+        currentWork: v.string(),
+        institution: v.string(),
+        profession: v.union(v.literal("student"), v.literal("workingProfessional")),
+        skills: v.array(v.string()),
+        photoId: v.optional(v.id("_storage")),
+    },
+    handler: async (ctx, args) => {
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            throw new Error('Unauthorized')
+        }
+
+        const userInfo = await ctx.db
+        .query("userInfo")
+        .filter(q => q.eq(q.field("userId"), userId))
+        .unique();
+
+        if(!userInfo) {
+            throw new Error('User info not found')
+        }
+
+        const updatedUserInfo = await ctx.db.patch(userInfo._id, {
+            userName: args.userName,
+            github: args.github,
+            linkedin: args.linkedin,
+            lastProject: args.lastProject,
+            currentWork: args.currentWork,
+            institution: args.institution,
+            profession: args.profession,
+            skills: args.skills,
+            photoId: args.photoId,
+        });
+        return updatedUserInfo;
+    }
+})  
 
 export const create = mutation({
     args: {

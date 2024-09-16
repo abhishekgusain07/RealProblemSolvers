@@ -39,11 +39,8 @@ export default function userProfilePage({ initialUserInfo }: { initialUserInfo: 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
-    if(userInfo === initialUserInfo){
-      setIsChanged(false)
-    }else{
-      setIsChanged(true)
-    }
+    setIsChanged(true)
+    console.log("abhishekg guasin ", isChanged)
   }
 
   const handleProfessionChange = (value: "student" | "workingProfessional") => {
@@ -65,6 +62,7 @@ export default function userProfilePage({ initialUserInfo }: { initialUserInfo: 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically send the updated userInfo to your backend
+
     console.log('Updated user info:', userInfo)
     setIsEditing(false)
   }
@@ -121,8 +119,8 @@ export default function userProfilePage({ initialUserInfo }: { initialUserInfo: 
                       </div>
                     </div>
                     <Button className='w-full mt-5'
-                    onClick={() => setIsEditing(!isEditing)}
-                    disabled={isChanged}
+                    onClick={handleSubmit}
+                    disabled={!isChanged}
                     >Save Profile</Button>
                 </div>
             </div>
