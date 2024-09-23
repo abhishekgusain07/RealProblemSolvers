@@ -19,7 +19,6 @@ export default function Home() {
   // }
   useEffect(() => {
     if(isLoading)return;
-
     if(userInfo){
       router.push('/match')
     }else if(!open){

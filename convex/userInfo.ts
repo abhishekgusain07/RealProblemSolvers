@@ -4,6 +4,75 @@ import { auth } from "./auth";
 
 
 
+export const requestMatch = mutation({
+    args:{},
+    handler:async(ctx, args) => {
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            throw new Error('Unauthorized')
+        }
+
+        const userInfo = await ctx.db
+        .query("userInfo")
+        .filter(q => q.eq(q.field("userId"), userId))
+        .unique();
+
+        if(!userInfo) {
+            throw new Error('Unauthorized')
+        }
+        if (userInfo.status !== 'available') {
+            throw new Error('User is not availaible for matching')
+        }
+        
+        //updating user status to matching
+        await ctx.db.patch(userInfo._id, {
+            status: 'waiting',
+            lastActive: Date.now()
+        })
+
+        //add user to waiting queue
+        await ctx.db.insert('waitingQueue', {
+            userId : userInfo._id,
+            joinedAt: Date.now()
+        })
+
+        return userInfo._id
+    }
+})
+export const stopMatching = mutation({
+    args:{},
+    handler: async(ctx,args) => {
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            throw new Error('Unauthorised')
+        }
+        const userInfo = await ctx.db.query("userInfo")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .unique()
+        if(!userInfo) {
+            throw new Error("Unauthorized")
+        }
+
+        //updating user status to available
+        await ctx.db.patch(userInfo._id, {
+            status: 'available',
+            lastActive: Date.now()
+        })
+
+        //remove user from queue
+        const waitingQueue = await ctx.db.query("waitingQueue")
+        .filter((q) => q.eq(q.field("userId"), userInfo._id))
+        .unique()
+        if(!waitingQueue) {
+            return userInfo._id
+        }
+
+        //deleting the userId from waitingQueue
+        await ctx.db.delete(waitingQueue._id);
+
+        return userInfo._id;
+    }
+})
 export const getActiveUser =  query({
     args:{},
     handler: async(ctx, args) =>{

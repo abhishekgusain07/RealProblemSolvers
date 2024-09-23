@@ -21,7 +21,7 @@ const schema = defineSchema({
       photoId: v.optional(v.id("_storage")),
       lastActive: v.optional(v.number()),
       status: v.optional(v.union(v.literal("available"), v.literal("waiting"), v.literal("deciding"), v.literal("matched"))),
-      currentMatched: v.optional(v.id("userInfo"))
+      currentMatched: v.optional(v.id("matches"))
     })
       .index("by_userId", ["userId"])
       .index("by_rating", ["averageRating"])
@@ -45,7 +45,8 @@ const schema = defineSchema({
         userId: v.id("userInfo"),
         joinedAt: v.number(),
       })
-        .index("by_joinedAt", ["joinedAt"]),
+        .index("by_joinedAt", ["joinedAt"])
+        .index("by_userId", ["userId"]),
       
       matches: defineTable({
         user1: v.id("userInfo"),
