@@ -147,6 +147,7 @@ export const create = mutation({
             totalRatings: args.totalRatings || 0,
             projectsCompleted: args.projectsCompleted || 0,
             photoId: args.photoId,
+            status: "available"
         })
         return userInfoId
     }

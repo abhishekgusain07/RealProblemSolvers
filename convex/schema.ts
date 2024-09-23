@@ -20,12 +20,17 @@ const schema = defineSchema({
       projectsCompleted: v.number(),
       photoId: v.optional(v.id("_storage")),
       lastActive: v.optional(v.number()),
+      status: v.optional(v.union(v.literal("available"), v.literal("waiting"), v.literal("deciding"), v.literal("matched"))),
+      currentMatched: v.optional(v.id("userInfo"))
     })
       .index("by_userId", ["userId"])
       .index("by_rating", ["averageRating"])
       .index("by_projectsCompleted", ["projectsCompleted"])
       .index("by_profession", ["profession"])
       .index("by_skills", ["skills"])
+      .index("by_status", ["status"])
+
+      .index("by_lastActive", ["lastActive"])
       .searchIndex("search_github", {
         searchField: "github",
         filterFields: ["profession", "averageRating"]
@@ -35,9 +40,27 @@ const schema = defineSchema({
         filterFields: ["profession", "averageRating"]
       })
       .index("by_userName", ["userName"]),
-  });
+      
+      waitingQueue: defineTable({
+        userId: v.id("userInfo"),
+        joinedAt: v.number(),
+      })
+        .index("by_joinedAt", ["joinedAt"]),
+      
+      matches: defineTable({
+        user1: v.id("userInfo"),
+        user2: v.id("userInfo"),
+        status: v.union(v.literal("pending"), v.literal("accepted"), v.literal("rejected")),
+        createdAt: v.number(),
+        decidedAt: v.optional(v.number()),
+        })
+        .index("by_user1", ["user1"])
+        .index("by_user2", ["user2"])
+        .index("by_status", ["status"]),
+});
 
 
+  
 // users table
 // {
 //     _id: Id<"users">,
