@@ -5,18 +5,6 @@ import { useCallback, useMemo, useState } from "react";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import type { userProffesion } from "@/lib/types";
 
-type RequestType = {
-    userName : string;
-    github: string;
-    linkedin ?: string;
-    lastProject ?: string;
-    currentWork ?: string;
-    profession : userProffesion;
-    institution ?: string;
-    skills: string[];
-    photoId ?: Id<"_storage"> | undefined;
-    lastActive ?: number;
-};
 type ResponseType = Id <"userInfo"> | null;
 
 type Options = {
@@ -25,7 +13,7 @@ type Options = {
     onSettled?: () => void;
     throwError?: boolean;
 }
-export const useCreateUserInfo = (options?: Options) => {
+export const useUpdateUserActivity = (options?: Options) => {
     const [data, setData] = useState<ResponseType>(null);
     const [error, setError] = useState<Error | null>(null);
     const [status, setStatus] = useState<null | "pending" | "success" | "error" | "settled">(null);
@@ -35,14 +23,14 @@ export const useCreateUserInfo = (options?: Options) => {
     const isError = useMemo(() => status === "error", [status]);
     const isSettled = useMemo(() => status === "settled", [status]);
 
-    const mutation = useMutation(api.userInfo.create);
+    const mutation = useMutation(api.userInfo.updateUserActivity);
 
-    const mutate = useCallback(async(values:RequestType, options?: Options) => {
+    const mutate = useCallback(async(options?: Options) => {
         try {
             setData(null);
             setError(null);
             setStatus("pending");
-            const response = await mutation(values);
+            const response = await mutation();
             options?.onSuccess?.(response);
             return response
         } catch (error) {

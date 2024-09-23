@@ -19,6 +19,7 @@ const schema = defineSchema({
       totalRatings: v.number(),
       projectsCompleted: v.number(),
       photoId: v.optional(v.id("_storage")),
+      lastActive: v.optional(v.number()),
     })
       .index("by_userId", ["userId"])
       .index("by_rating", ["averageRating"])

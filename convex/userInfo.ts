@@ -3,6 +3,63 @@ import { mutation, query } from "./_generated/server";
 import { auth } from "./auth";
 
 
+
+export const getActiveUser =  query({
+    args:{},
+    handler: async(ctx, args) =>{
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            return null
+        }
+        const userInfo = await ctx.db
+        .query("userInfo")
+        .filter((q) => q.eq(q.field("userId"), userId))
+        .unique()
+
+        if(!userInfo) {
+            return null
+        }
+
+        const twoMinutesAgo = Date.now() - ( 2 * 60 * 1000);
+        const activeUsers = await ctx.db 
+        .query("userInfo")
+        .filter(q => q.gte(q.field("lastActive"),twoMinutesAgo))
+        .collect()
+
+        const filteredActiveUsers = activeUsers.map(user => ({
+            _id: user._id,
+            userName: user.userName,
+            institution: user.institution
+        }))
+
+        return filteredActiveUsers
+    }
+})
+export const updateUserActivity = mutation({
+    args: {
+    },
+    handler: async(ctx, args) => {
+        const userId = await auth.getUserId(ctx)
+        if(!userId) {
+            throw new Error("Unauthorized");
+        }
+        
+        const userInfo = await ctx.db
+        .query("userInfo")
+        .filter(q => q.eq(q.field("userId"), userId))
+        .unique()
+        
+        if(!userInfo) {
+            throw new Error("Unauthorized")
+        }
+        
+        const updatedUserInfo = await ctx.db.patch(userInfo._id, {
+            lastActive: Date.now()
+        });
+
+        return userInfo._id;
+    }
+});
 export const update = mutation({
     args: {
         userName: v.string(),
@@ -165,3 +222,5 @@ export const checkUserName = query({
         return true
     }
 })
+
+

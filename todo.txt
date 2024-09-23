@@ -1,3 +1,9 @@
 1. updating user profile page
 2. matching algorithm
+Todo:
+1. userinfo update page
+2. matching algorithm
+3. user private channel
 
+Done:
+1. active users function
