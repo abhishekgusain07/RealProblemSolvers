@@ -1,9 +1,8 @@
-1. updating user profile page
-2. matching algorithm
 Todo:
 1. userinfo update page
 2. matching algorithm
 3. user private channel
+4. reduce ping to update lastactive in db
 
 Done:
 1. active users function
