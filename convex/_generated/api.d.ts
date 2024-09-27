@@ -14,8 +14,10 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth from "../auth.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as matching from "../matching.js";
+import type * as notification from "../notification.js";
 import type * as upload from "../upload.js";
 import type * as user from "../user.js";
 import type * as userInfo from "../userInfo.js";
@@ -30,8 +32,10 @@ import type * as userInfo from "../userInfo.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  crons: typeof crons;
   http: typeof http;
   matching: typeof matching;
+  notification: typeof notification;
   upload: typeof upload;
   user: typeof user;
   userInfo: typeof userInfo;

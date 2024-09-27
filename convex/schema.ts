@@ -58,6 +58,14 @@ const schema = defineSchema({
         .index("by_user1", ["user1"])
         .index("by_user2", ["user2"])
         .index("by_status", ["status"]),
+        
+      notifications: defineTable({
+          userId: v.id("userInfo"),
+          type: v.string(),
+          content: v.string(),
+          read: v.boolean(),
+          createdAt: v.number(),
+        }).index("by_userId", ["userId"]),
 });
 
 

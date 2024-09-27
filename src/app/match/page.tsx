@@ -1,5 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button";
+import NotificationComponent from "@/features/notifications/components/notifications";
 import { useDeleteMatchRequest } from "@/features/userInfo/api/use-deleteMatchRequest";
 import { useGetUserInfo } from "@/features/userInfo/api/use-get-userinfo";
 import { useGetActiveUsers } from "@/features/userInfo/api/use-getActiveUser";
@@ -74,6 +75,7 @@ const MatchPage = () => {
             <Button variant="destructive" disabled={!startSearching} onClick={() => handleStopPairing()}>
                 Stop matching
             </Button>
+            <NotificationComponent />
         </div>
     )
 }
