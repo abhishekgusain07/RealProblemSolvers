@@ -49,8 +49,8 @@ export const performMatching = internalAction({
       
       // Create a match
       const matchId = await ctx.runMutation(internal.matching.createMatch, { user1Id: user1.userId, user2Id: user2.userId });
-      
       // Update user statuses
+      console.log("I am here")
       await ctx.runMutation(internal.matching.updateUserStatus, { userId: user1.userId, status: "deciding", currentMatch: matchId });
       await ctx.runMutation(internal.matching.updateUserStatus, { userId: user2.userId, status: "deciding", currentMatch: matchId });
       
@@ -71,7 +71,7 @@ export const performMatching = internalAction({
         content: `You've been matched with ${user1Info.userName}!`,
       });
 
-      
+
       console.log(`Created match: ${matchId} between users ${user1.userId} and ${user2.userId}`);
       matchedPairs.push({ user1: user1.userId, user2: user2.userId, matchId });
     }
@@ -121,12 +121,13 @@ export const performMatching = internalAction({
   export const createMatch = internalMutation({
     args: { user1Id: v.id("userInfo"), user2Id: v.id("userInfo") },
     handler: async (ctx, args) => {
-      return await ctx.db.insert("matches", {
+      const match = await ctx.db.insert("matches", {
         user1: args.user1Id,
         user2: args.user2Id,
         status: "pending",
         createdAt: Date.now(),
       });
+      return match
     },
   });
   
